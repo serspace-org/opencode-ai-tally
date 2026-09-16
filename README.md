@@ -6,17 +6,21 @@ OpenCode core or place AI Tally in the provider request path.
 
 ## Install and configure
 
-This repository targets OpenCode plugin loading. Install it in the OpenCode
-runtime using the plugin mechanism supported by the target OpenCode release,
-then configure the plugin entry point as follows:
+For a local test, use the file plugin form so OpenCode loads the TypeScript
+source directly. Add this to the test project's `.opencode/opencode.jsonc`:
 
 ```jsonc
 {
   "plugin": [
-    ["@serspace/opencode-ai-tally", { "featureTag": "opencode-session" }]
+    ["/path/to/opencode-ai-tally/src/index.ts", {
+      "featureTag": "opencode-session"
+    }]
   ]
 }
 ```
+
+Replace `/path/to/opencode-ai-tally` with the local checkout path. A published
+package can later use the package-spec form instead.
 
 Set `TALLY_KEY` in the OpenCode server environment. The plugin is disabled when
 the key is absent. Optional plugin options are `featureTag`, `endpoint`, and

@@ -35,3 +35,5 @@ export const AiTallyPlugin: Plugin = async (_input, options = {}) => {
     dispose: async () => client.dispose(),
   }
 }
+
+export const id = "serspace-opencode-ai-tally"
