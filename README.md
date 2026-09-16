@@ -12,15 +12,15 @@ source directly. Add this to the test project's `.opencode/opencode.jsonc`:
 ```jsonc
 {
   "plugin": [
-    ["/Users/jtorreggiani/Organizer/work/serspace/workbench/opencode-ai-tally/src/index.ts", {
+    ["/path/to/opencode-ai-tally/src/index.ts", {
       "featureTag": "opencode-session"
     }]
   ]
 }
 ```
 
-Replace the absolute path for another checkout. A published package can later
-use the package-spec form instead.
+Replace `/path/to/opencode-ai-tally` with the local checkout path. A published
+package can later use the package-spec form instead.
 
 Set `TALLY_KEY` in the OpenCode server environment. The plugin is disabled when
 the key is absent. Optional plugin options are `featureTag`, `endpoint`, and
