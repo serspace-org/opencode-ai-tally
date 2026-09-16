@@ -1,0 +1,10 @@
+{
+  "name": "@serspace/opencode-ai-tally",
+  "private": true,
+  "type": "module",
+  "version": "0.1.0",
+  "description": "Prototype OpenCode plugin for fail-open AI Tally usage reporting",
+  "dependencies": {
+    "@opencode-ai/plugin": "^1.18.31"
+  }
+}
