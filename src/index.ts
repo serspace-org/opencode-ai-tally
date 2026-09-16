@@ -16,7 +16,7 @@ function optionNumber(value: unknown) {
   return typeof value === "number" && Number.isFinite(value) && value > 0 ? value : undefined
 }
 
-export const AiTallyPlugin: Plugin = async (_input, options = {}) => {
+const server: Plugin = async (_input, options = {}) => {
   const config = options as Options
   const client = new TallyClient({
     key: process.env.TALLY_KEY,
@@ -36,4 +36,7 @@ export const AiTallyPlugin: Plugin = async (_input, options = {}) => {
   }
 }
 
-export const id = "serspace-opencode-ai-tally"
+export default {
+  id: "serspace-opencode-ai-tally",
+  server,
+}

@@ -7,7 +7,9 @@ OpenCode core or place AI Tally in the provider request path.
 ## Install and configure
 
 For a local test, use the file plugin form so OpenCode loads the TypeScript
-source directly. Add this to the test project's `.opencode/opencode.jsonc`:
+source directly. The module uses OpenCode's V1 server-plugin shape: a default
+export containing both `id` and `server`. Add this to the test project's
+`.opencode/opencode.jsonc`:
 
 ```jsonc
 {
