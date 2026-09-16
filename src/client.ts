@@ -5,6 +5,7 @@ type ClientOptions = {
   endpoint?: string
   flushIntervalMs?: number
   maxQueueSize?: number
+  debug?: boolean
 }
 
 type BatchResponse = {
@@ -20,12 +21,14 @@ export class TallyClient {
   readonly #seen = new Set<string>()
   #timer: ReturnType<typeof setTimeout> | undefined
   #flushing = false
+  readonly #debug: boolean
 
   constructor(options: ClientOptions) {
     this.#key = options.key
     this.#endpoint = (options.endpoint ?? "https://ingest.ai-tally.com").replace(/\/$/, "")
     this.#flushIntervalMs = options.flushIntervalMs ?? 1_000
     this.#maxQueueSize = options.maxQueueSize ?? 10_000
+    this.#debug = options.debug ?? false
   }
 
   record(span: TallySpan) {
@@ -41,6 +44,7 @@ export class TallyClient {
     this.#flushing = true
     const spans = this.#queue.splice(0, 100)
     const batchID = crypto.randomUUID()
+    if (this.#debug) console.info(`[ai-tally] sending ${spans.length} span(s)`)
     try {
       const response = await fetch(`${this.#endpoint}/v1/batches`, {
         method: "POST",
@@ -56,6 +60,7 @@ export class TallyClient {
         }),
       })
       const result = (await response.json().catch(() => ({}))) as BatchResponse
+      if (this.#debug) console.info(`[ai-tally] response ${response.status}`, result)
       if (!response.ok || result.status === "retry") {
         this.#queue.unshift(...spans)
         console.warn(`[ai-tally] batch ${batchID} was not accepted (${response.status})`)
