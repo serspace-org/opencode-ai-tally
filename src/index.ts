@@ -22,6 +22,7 @@ const server: Plugin = async (_input, options = {}) => {
     key: process.env.TALLY_KEY,
     endpoint: optionString(config.endpoint),
     flushIntervalMs: optionNumber(config.flushIntervalMs),
+    debug,
   })
   const featureTag = optionString(config.featureTag) ?? "opencode-session"
 

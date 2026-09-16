@@ -26,7 +26,8 @@ package can later use the package-spec form instead.
 
 Set `TALLY_KEY` in the OpenCode server environment. The plugin is disabled when
 the key is absent. Optional plugin options are `featureTag`, `endpoint`, and
-`flushIntervalMs`.
+`flushIntervalMs`. Set `TALLY_DEBUG=1` to log plugin initialization, observed
+message events, queueing, and AI Tally response status without logging the key.
 
 ## Design
 
