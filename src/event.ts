@@ -1,9 +1,13 @@
 export type TallySpan = {
   trace_id: string
   span_id: string
+  timestamp_ns: number
+  ServiceName: string
+  SpanName: string
   "gen_ai.system": string
   "gen_ai.operation.name": "chat"
   "gen_ai.request.model": string
+  "gen_ai.response.model": string
   "gen_ai.usage.input_tokens"?: number
   "gen_ai.usage.output_tokens"?: number
   "gen_ai.usage.cached_input_tokens"?: number
@@ -47,9 +51,13 @@ export function spanFromEvent(event: unknown, featureTag: string): TallySpan | u
   const span: TallySpan = {
     trace_id: sessionID,
     span_id: messageID,
+    timestamp_ns: info.time.completed * 1_000_000,
+    ServiceName: "opencode",
+    SpanName: "chat",
     "gen_ai.system": providerName(providerID),
     "gen_ai.operation.name": "chat",
     "gen_ai.request.model": modelID,
+    "gen_ai.response.model": modelID,
     "gen_ai.feature_tag": featureTag,
     "gen_ai.session_id": sessionID,
   }
