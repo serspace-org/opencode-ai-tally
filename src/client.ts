@@ -35,6 +35,7 @@ export class TallyClient {
     if (!this.#key || this.#seen.has(span.span_id)) return
     this.#seen.add(span.span_id)
     this.#queue.push(span)
+    if (this.#debug) console.info(`[ai-tally] queued ${this.#queue.length} span(s)`)
     if (this.#queue.length > this.#maxQueueSize) this.#queue.shift()
     this.#schedule()
   }
