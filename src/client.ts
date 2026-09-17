@@ -1,4 +1,5 @@
 import type { TallySpan } from "./event"
+import { tallyLog } from "./log"
 
 type ClientOptions = {
   key?: string
@@ -35,7 +36,7 @@ export class TallyClient {
     if (!this.#key || this.#seen.has(span.span_id)) return
     this.#seen.add(span.span_id)
     this.#queue.push(span)
-    if (this.#debug) console.info(`[ai-tally] queued ${this.#queue.length} span(s)`)
+    if (this.#debug) tallyLog(`[ai-tally] queued ${this.#queue.length} span(s)`)
     if (this.#queue.length > this.#maxQueueSize) this.#queue.shift()
     this.#schedule()
   }
@@ -45,7 +46,7 @@ export class TallyClient {
     this.#flushing = true
     const spans = this.#queue.splice(0, 100)
     const batchID = crypto.randomUUID()
-    if (this.#debug) console.info(`[ai-tally] sending ${spans.length} span(s)`)
+    if (this.#debug) tallyLog(`[ai-tally] sending ${spans.length} span(s)`)
     try {
       const response = await fetch(`${this.#endpoint}/v1/batches`, {
         method: "POST",
@@ -61,14 +62,14 @@ export class TallyClient {
         }),
       })
       const result = (await response.json().catch(() => ({}))) as BatchResponse
-      if (this.#debug) console.info(`[ai-tally] response ${response.status}`, result)
+      if (this.#debug) tallyLog(`[ai-tally] response ${response.status}`, result)
       if (!response.ok || result.status === "retry") {
         this.#queue.unshift(...spans)
-        console.warn(`[ai-tally] batch ${batchID} was not accepted (${response.status})`)
+        tallyLog(`[ai-tally] batch ${batchID} was not accepted (${response.status})`)
       }
     } catch (error) {
       this.#queue.unshift(...spans)
-      console.warn("[ai-tally] batch delivery failed; usage will be retried", error)
+      tallyLog("[ai-tally] batch delivery failed; usage will be retried", error)
     } finally {
       this.#flushing = false
       if (this.#queue.length > 0) this.#schedule()

@@ -1,6 +1,7 @@
 import type { Plugin } from "@opencode-ai/plugin"
 import { TallyClient } from "./client"
 import { spanFromEvent } from "./event"
+import { tallyLog } from "./log"
 
 type Options = {
   featureTag?: unknown
@@ -28,17 +29,17 @@ const server: Plugin = async (_input, options = {}) => {
   })
   const featureTag = optionString(config.featureTag) ?? "opencode-session"
 
-  if (debug) console.info("[ai-tally] plugin initialized")
-  if (!process.env.TALLY_KEY) console.info("[ai-tally] TALLY_KEY is not set; usage reporting is disabled")
+  if (debug) tallyLog("[ai-tally] plugin initialized")
+  if (!process.env.TALLY_KEY) tallyLog("[ai-tally] TALLY_KEY is not set; usage reporting is disabled")
 
   return {
     event: async ({ event }) => {
       if (debug && typeof event === "object" && event !== null && "type" in event) {
-        console.info("[ai-tally] observed event", event.type)
+        tallyLog("[ai-tally] observed event", event.type)
       }
       const span = spanFromEvent(event, featureTag)
       if (span) {
-        if (debug) console.info("[ai-tally] queueing completed assistant usage")
+        if (debug) tallyLog("[ai-tally] queueing completed assistant usage")
         client.record(span)
       }
     },
