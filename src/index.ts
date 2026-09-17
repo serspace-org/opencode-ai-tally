@@ -34,12 +34,19 @@ const server: Plugin = async (_input, options = {}) => {
 
   return {
     event: async ({ event }) => {
-      if (debug && typeof event === "object" && event !== null && "type" in event) {
-        tallyLog("[ai-tally] observed event", event.type)
-      }
       const span = spanFromEvent(event, featureTag)
       if (span) {
-        if (debug) tallyLog("[ai-tally] queueing completed assistant usage")
+        if (debug) {
+          tallyLog(
+            "[ai-tally] queueing completed assistant usage",
+            JSON.stringify({
+              message_id: span.span_id,
+              input_tokens: span["gen_ai.usage.input_tokens"] ?? null,
+              output_tokens: span["gen_ai.usage.output_tokens"] ?? null,
+              cached_input_tokens: span["gen_ai.usage.cached_input_tokens"] ?? null,
+            }),
+          )
+        }
         client.record(span)
       }
     },
