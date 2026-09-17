@@ -13,7 +13,10 @@ export type TallySpan = {
   "gen_ai.usage.cached_input_tokens"?: number
   "gen_ai.feature_tag": string
   "gen_ai.session_id": string
+  "gen_ai.cost.billing_mode": BillingMode
 }
+
+type BillingMode = "api" | "subscription"
 
 type RecordValue = Record<string, unknown>
 
@@ -27,6 +30,19 @@ function stringValue(value: unknown) {
 
 function finiteNumber(value: unknown) {
   return typeof value === "number" && Number.isFinite(value) && value >= 0 ? value : undefined
+}
+
+// Providers whose calls are covered by a seat or plan the user already pays for, rather than
+// billed per call against an API key.
+//
+// Read from the RAW providerID, deliberately before providerName() below folds `opencode` into
+// `openai`. After that fold the two are indistinguishable, and that is exactly the confusion this
+// field exists to remove: a subscription call relabelled as `openai` gets priced at OpenAI
+// pay-as-you-go list rates, asserting a per-call cost the user never incurred.
+const SUBSCRIPTION_PROVIDERS = new Set(["opencode", "claude-code"])
+
+function billingMode(providerID: string): BillingMode {
+  return SUBSCRIPTION_PROVIDERS.has(providerID) ? "subscription" : "api"
 }
 
 function providerName(providerID: string) {
@@ -60,6 +76,7 @@ export function spanFromEvent(event: unknown, featureTag: string): TallySpan | u
     "gen_ai.response.model": modelID,
     "gen_ai.feature_tag": featureTag,
     "gen_ai.session_id": sessionID,
+    "gen_ai.cost.billing_mode": billingMode(providerID),
   }
 
   const input = finiteNumber(info.tokens.input)

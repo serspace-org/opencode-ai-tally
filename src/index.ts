@@ -44,6 +44,7 @@ const server: Plugin = async (_input, options = {}) => {
               input_tokens: span["gen_ai.usage.input_tokens"] ?? null,
               output_tokens: span["gen_ai.usage.output_tokens"] ?? null,
               cached_input_tokens: span["gen_ai.usage.cached_input_tokens"] ?? null,
+              billing_mode: span["gen_ai.cost.billing_mode"],
             }),
           )
         }
